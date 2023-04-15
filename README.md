@@ -27,13 +27,31 @@ To install `nvm`, follow instructions in the README of the project: https://gith
 
 Once `nvm` is install:
 
-- Create a file `.nvmrc` with `v19` inside
+- Create a file `.nvmrc` at the root of your repository with `v19` inside
 - Install node v19 using `nvm`: `nvm install v19`
 
 Then, everytime you work on your project, you can type `nvm use` command, and it will switch you to the version inside the `.nvmrc` file.
 
 You can verify if everything is fine by checking node version: `node -v`
 and it should output version 19.
+
+### Run your app locally with [`http-server`](https://www.npmjs.com/package/http-server)
+
+Then [`http-server`](https://www.npmjs.com/package/http-server) node modules will server your static files on localhost.
+
+Let's expose your index.html from your previous workshop:
+
+```sh
+# Make sure you are using NodeJS version 19.
+# If you have nvm; just run nvm use
+nvm use
+# > `node -v` should output v19.x.x
+npx http-server .
+```
+
+You should see your app running on [localhost:8080](http://localhost:8080).
+
+Now if you change some elements of your `html` page, you just have to refresh in your browser to see your changes applied. Give it a try.
 
 ## Step 1: Create **YOUR** Socarotte
 
@@ -59,7 +77,7 @@ You **do not** have to respect the same layout as our model nor the following sc
   - an image of the product
   - a product name
   - a price per kg
-  - a description of who is selling and how far frPromotionom our current location
+  - a description of who is selling and how far from our current location
   - a button to add the product to basket
 
 ![socarotte model](images/socarotte-model.png)
@@ -78,6 +96,45 @@ You can of course build your own.
 
 Once downloaded or created, simply add it to under `public/favicon.ico` in your repository. `http-server` will serve it and your browser should render it.
 
+### Adapt your Dockerfile
+
+You should now have more than one `index.html` file.
+Don't forget to include all other static files (.css, .png, .jpg ...) in your `Dockerfile` for nginx to serve it.
+
+For instance, let's consider the following repo structure:
+
+```plain
+.
+├── index.html
+├── images
+│   └── banner.png
+├── public
+│   └── favicon.ico
+├── README.md
+└── styles.css
+
+2 directories, 4 files
+```
+
+And your `html` would include `styles.css` like:
+
+```html
+<link rel="stylesheet" href="/styles.css" />
+```
+
+Then the Dockerfile would be:
+
+```Dockerfile
+FROM nginx:1.22.1
+
+COPY ./index.html /usr/share/nginx/html/index.html
+COPY ./styles.css /usr/share/nginx/html/styles.css
+COPY ./images /usr/share/nginx/html/images
+COPY ./public /usr/share/nginx/html/public
+```
+
+Build and run it locally to make sure everything is served correctly.
+
 ## Step 2: Annotate your HTML tags
 
 All workshop are corrected automatically. For this to be possible, you will need to add `socra="..."` tags to some of the elements of your page.
@@ -92,7 +149,7 @@ Here are all the tag you **must** add:
 
 - on Socarotte's banner      ```socra="banner"```
 - on the main navigation     ```socra="main-navigation"```
-- on the product navigation  ```socra="product-navigation```
+- on the product navigation  ```socra="product-navigation"```
 - on your product card(s)    ```socra="product-card"```
 
 ## Challenge: Make me responsive
